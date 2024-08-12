@@ -1,0 +1,7 @@
+#%Module
+set prefix ~/soft/ProTools
+set exec_prefix ${prefix}
+
+setenv ProTools           $prefix
+
+append-path PATH  $prefix
