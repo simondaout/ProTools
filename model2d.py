@@ -97,9 +97,12 @@ class profile:
                 sys.exit()
         else:
             print('Read reference point profile in lat/lon')
-            x, y = self.UTM(lon, lat) 
-            self.x,self.y=(x-self.ref_x),(y-self.ref_y)
-    
+            if lat is not None:
+                x, y = self.UTM(lon, lat) 
+                self.x,self.y=(x-self.ref_x),(y-self.ref_y)
+            else:
+                x , y = self.x, self.y    
+
 class topo:
     """ 
     topo class: Load topographic file 
