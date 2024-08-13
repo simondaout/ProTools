@@ -2,7 +2,7 @@
 
 Python script to plot profiles across InSAR and GPS data and/or estimate residual ramps. 
 
-Example of INPUT PYTHON FILE:
+Example of Input python file:
 ============
 
 	# All data are here in WGS84 (Lat/Lon)
@@ -68,7 +68,7 @@ Example of INPUT PYTHON FILE:
 
 ![Alt text](figures/4_gpsVSinsar.jpg)
 
-Example of Input Python file able to stitch two InSAR tracks together in the overlap avera:
+Example of Input Python file able to stitch two InSAR tracks together in the overlap area:
 ============
 	
 	maindir='../'
