@@ -69,8 +69,9 @@ Example of INPUT PYTHON FILE:
 	plot_basemap = True # plot basemap 
 
 	import matplotlib.cm as cm
-	cmap = cm.rainbow
+	cmap = cm.rainbow # define colormap (Optional)
 
+	# Optional
 	gpsdata=[
         network(network='stations_dago.txt',reduction='dago21',wdir=maindir+'gps/',dim=3,scale=1,utm_proj='32632',lmin=-2.5,lmax=5,proj=[0.766044443118978,0.6427876096865394,0]),
 	]
@@ -85,28 +86,40 @@ Example of INPUT PYTHON FILE:
          profile(name='Amatrice',x=8.5e2,y=4.74e3,l=100,w=10,strike=-40,type='stdscat',lbins=1.),
         ]
 
+	# Optional
 	shapefiles=[
         shapefile(name='Regions',wdir=maindir+'italian-maps-shapefiles/italy-with-regions/',filename='reg2011_g.shp',utm_proj='32632',edgecolor='black',color='none',linewidth=0.5),
         shapefile(name='Main faults',wdir=maindir+'faults/',filename='fault_main_utm32.shp',utm_proj='32632',edgecolor='none',color='red'),
         shapefile(name='Secondary faults',wdir=maindir+'faults/',filename='fault_utm32.shp',utm_proj='32632',edgecolor='none',color='red',linewidth=0.5)
         ]
 
+	# Optional
 	topodata=[
         topo(name='DEM_20',wdir=maindir+'DEM_ITALY_20/',filename='DEM20_11.5_15_41.5_43.5_s360.xyz',color='black',width=1.,utm_proj='32632',scale=1,topomin=0, topomax=5000),
         ]
 
+	# Optional
 	seismifiles=[
         seismicity(name='INGV 2014-2021', wdir=maindir+'seismicity/',filename='ingv_2014-2021.txt',color='yellow',width=2.,utm_proj='32632',fmt='txt')
 	]
 
+	# Optional
 	fmodel=[
 		fault2d(name='LF',x=8.394e2,y=4.6806e3,utm_proj=None), # add 2D fault in map view
 	]
 
+
+Examples of Output Figures:
+============
+
 ![Alt text](4pro-map.jpg)
+
 ![Alt text](4-pro-los.jpg)
+
 ![Alt text](4-pro-gps.jpg)
+
 ![Alt text](4-pro-topo.jpg)
+
 ![Alt text](4_gpsVSinsar.jpg)
 
 
