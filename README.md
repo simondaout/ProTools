@@ -102,3 +102,11 @@ Example of INPUT PYTHON FILE:
 	fmodel=[
 		fault2d(name='LF',x=8.394e2,y=4.6806e3,utm_proj=None), # add 2D fault in map view
 	]
+
+![Alt text](4pro-map.jpg)
+![Alt text](4-pro-los.jpg)
+![Alt text](4-pro-gps.jpg)
+![Alt text](4-pro-topo.jpg)
+![Alt text](4_gpsVSinsar.jpg)
+
+
