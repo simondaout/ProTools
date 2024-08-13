@@ -1,5 +1,7 @@
 import numpy as np
 import math
+import sys
+from os import path
 
 class network:
     """ 
@@ -17,7 +19,7 @@ class network:
     perc: cleaning outliers option within bins profile, default: percentile=95
     lmin,lmax: min max options for plots
     utm_proj: EPSG UTM projection. If not None, project data from WGS84 to EPSG.
-    ref: [lon, lat] reference point (default: None). 
+    ref: [lon, lat] reference point. Translate all data to this point (default: None). 
     prof=[east, north, up] optional projection into average LOS vector
     """
 
@@ -52,19 +54,31 @@ class network:
         # projection
         self.utm_proj=utm_proj
         self.ref=ref
-        if self.utm_proj is not None:
-            import pyproj
-            self.UTM = pyproj.Proj("EPSG:{}".format(self.utm_proj))
-            if self.ref is not None:
-                self.ref_x,self.ref_y =  self.UTM(self.ref[0],self.ref[1])
-            else:
-                self.ref_x,self.ref_y = 0,0
+        self.ref_x,self.ref_y = 0,0
 
         # projection to LOS
         self.proj = proj
 
+    def update_proj(self,ref):
+       self.ref = ref
+       if self.utm_proj is not None:
+            import pyproj
+            try:
+                crs = pyproj.CRS.from_epsg(self.utm_proj)
+                self.UTM = pyproj.Proj(crs, always_xy=True)
+            except pyproj.exceptions.CRSError as e:
+                print(f"Error creating projection: {e}")
+            if self.ref is not None:
+                self.ref_x,self.ref_y =  self.UTM(self.ref[0],self.ref[1])
+       else:
+            self.ref_x,self.ref_y = self.ref[0],self.ref[1]
+
     def loadgps(self):
+        self.update_proj(self.ref)
         gpsf=self.wdir+self.network
+        if path.exists(gpsf) is False:
+            print("File: {0} not found, Exit!".format(gpsf))
+            sys.exit()
         if self.utm_proj is None:
             self.name,self.x,self.y=np.loadtxt(gpsf,comments='#',unpack=True,dtype='S4,f,f')
             # convert to meters
@@ -107,7 +121,11 @@ class network:
              self.lmax = np.max(np.array([self.ux,self.uy])) + 1
 
     def loadinsar(self):
+        self.update_proj(self.ref)
         insarf=self.wdir+ '/' +self.network
+        if path.exists(insarf) is False:
+            print("File: {0} not found, Exit!".format(insarf))
+            sys.exit()
         if self.utm_proj is None:
             if self.theta is False:
                 self.x,self.y,ulos=np.loadtxt(insarf,comments='#',unpack=True,usecols=(0,1,2),dtype='f,f,f')

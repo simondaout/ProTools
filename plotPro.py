@@ -89,6 +89,7 @@ if len(sys.argv)>1:
     print(topo.__doc__)
     print(profile.__doc__)
     print(gmt.__doc__)
+    print(shapefile.__doc__)
     print(fault2d.__doc__)
     sys.exit()
 
@@ -128,25 +129,10 @@ if 'topodata' not in globals():
     topodata = []
     logger.warning('No topodata list defined')
 Mtopo = len(topodata)
-for i in range(Mtopo):
-  plot=topodata[i]
-  logger.debug('Load data {0}'.format(plot.name))
-  plot.load(xlim=xlim,ylim=ylim)
-  if len(plot.z) < 1:
-        logger.debug('Empty data file...')
-if Mtopo == 0: 
-  logger.warning('No topodata defined')
-  Mtopo = 0
 
 if 'gpsdata' not in globals():
     gpsdata = []
     logger.warning('No gpsdata list defined')
-Mgps = len(gpsdata)
-for i in range(Mgps):
-      gps = gpsdata[i]
-      logger.debug('Load data {0}'.format(gps.network))
-      gps.loadgps()
-      crs = gps.utm_proj       
 
 if 'gmtfiles' not in globals():
     gmtfiles = []
@@ -156,10 +142,6 @@ if 'seismifiles' not in globals():
     seismifiles = []
     logger.warning('No seismifiles list defined')
 Mseismi=len(seismifiles)
-for i in range(Mseismi):
-    seismi = seismifiles[i]
-    logger.debug('Load data {0}'.format(seismi.filename))
-    seismi.load(xlim=xlim,ylim=ylim)
 
 if 'shapefiles' not in globals():
     shapefiles = []
@@ -169,6 +151,32 @@ if 'insardata' not in globals():
     insardata = []
     logger.warning('No insardata list defined')
 Minsar = len(insardata)
+
+# if reference point for profile, then same reference point for all instances
+if profiles[0].ref is not None:
+    logger.warning('Warning! You have defined a reference point for first profile.')
+    logger.warning('All instances will have the same reference point and will be trasnlated.')
+for i in range(len(profiles)):
+    profiles[i].update_proj(profiles[0].ref)
+for i in range(len(insardata)):
+    insardata[i].update_proj(profiles[0].ref)
+for i in range(len(gpsdata)):
+    gpsdata[i].update_proj(profiles[0].ref)
+for i in range(len(gmtfiles)):
+    gmtfiles[i].update_proj(profiles[0].ref)
+for i in range(len(topodata)):
+    topodata[i].ref = profiles[0].ref
+for i in range(len(seismifiles)):
+    seismifiles[i].ref = profiles[0].ref
+for i in range(len(shapefiles)):
+    shapefiles[i].ref = profiles[0].ref
+
+for i in range(Mseismi):
+    seismi = seismifiles[i]
+    logger.debug('Load data {0}'.format(seismi.filename))
+    seismi.load(xlim=xlim,ylim=ylim)
+
+# load InSAR 
 for i in range(Minsar):
     insar = insardata[i]
     logger.debug('Load data {0}'.format(insar.network))
@@ -184,13 +192,26 @@ for i in range(Minsar):
       insar.uloscor = insar.ulos
     crs = insar.utm_proj
 
-# except:
-#   logger.warning('No insardata defined')
-#   Minsar = 0
+Mgps = len(gpsdata)
+for i in range(Mgps):
+      gps = gpsdata[i]
+      logger.debug('Load data {0}'.format(gps.network))
+      gps.loadgps()
+      crs = gps.utm_proj       
+
+for i in range(Mtopo):
+  plot=topodata[i]
+  logger.debug('Load data {0}'.format(plot.name))
+  plot.load(xlim=xlim,ylim=ylim)
+  if len(plot.z) < 1:
+        logger.debug('Empty data file...')
+if Mtopo == 0: 
+  logger.warning('No topodata defined')
+  Mtopo = 0
 
 # MAP
 # check if vertical for GPS
-vertical_map = True
+vertical_map = False
 for i in range(Mgps):
   if gpsdata[i].dim == 3:
     vertical_map = True
@@ -209,19 +230,26 @@ if 'xmin' in locals():
   ax.set_xlim(xmin,xmax)
   ax.set_ylim(ymin,ymax)
 
-if insardata[0].ref is not None or profiles[0].ref is not None:
-    plot_basemap = False
-
-if plot_basemap == True:
+if (plot_basemap == True) and (profiles[0].ref is None):
     import contextily as ctx
-    # horizontal
-    #ctx.add_basemap(ax,crs="EPSG:{}".format(crs), source=ctx.providers.Esri.WorldTopoMap,alpha=1,zorder=0)
     ctx.add_basemap(ax,crs="EPSG:{}".format(crs), source=ctx.providers.Esri.WorldShadedRelief,alpha=1,zorder=0)
-  #except:
-  #  print('plot_basemap variable is not defined or is not True. Skip backgroup topography plot')
-
 else:
-  print('plot_basemap variable is not defined or is not True. Skip backgroup topography plot')
+   print('plot_basemap variable is not defined or is not True or reference point is not None. Skip backgroup topography plot')
+
+for ii in range(len(shapefiles)):
+  import geopandas as gpd
+  import shapely.speedups
+  name = shapefiles[ii].name
+  fname = shapefiles[ii].filename
+  wdir = shapefiles[ii].wdir
+  color = shapefiles[ii].color
+  edgecolor = shapefiles[ii].edgecolor
+  linewidth = shapefiles[ii].linewidth
+  crs = shapefiles[ii].crs
+  shape = gpd.read_file(wdir + fname)
+  if crs != None:
+    shape = shape.to_crs("EPSG:{}".format(crs))
+  shape.plot(ax=ax,facecolor='none', color=color,edgecolor=edgecolor,linewidth=linewidth,label=name,zorder=25)
 
 for ii in range(len(gmtfiles)):
   name = gmtfiles[ii].name
@@ -231,7 +259,7 @@ for ii in range(len(gmtfiles)):
   width = gmtfiles[ii].width
   fx,fy = gmtfiles[ii].load(xlim=xlim,ylim=ylim)
   for i in range(len(fx)):
-    ax.plot(fx[i],fy[i],color = color,lw = width,zorder=20)
+    ax.plot(fx[i],fy[i],color = color,lw = width,zorder=25)
 
 if 'cmap' not in globals():
     try:
@@ -261,13 +289,13 @@ for i in range(Minsar):
   m.set_array(insar.ulos[::samp])
   masked_array = np.ma.array(insar.ulos[::samp], mask=np.isnan(insar.ulos[::samp]))
   facelos = m.to_rgba(masked_array)
-  ax.scatter(insar.x[::samp],insar.y[::samp], s=.05, marker = 'o',color = facelos, rasterized=True, label = 'LOS Velocity {}'.format(insar.reduction),zorder=10)
+  ax.scatter(insar.x[::samp],insar.y[::samp], s=.05, marker = 'o',color = facelos, rasterized=True, label = 'LOS Velocity {}'.format(insar.reduction),alpha=0.4,zorder=0)
 
 gpscolor = ['black','coral','red','darkorange']
 for i in range(Mgps):
   gps=gpsdata[i]
   logger.info('Plot GPS data {0}'.format(gps.network))
-  ax.quiver(gps.x,gps.y,gps.ux,gps.uy,scale = 125, width = 0.003, color = gpscolor[i%4],zorder=15)
+  ax.quiver(gps.x,gps.y,gps.ux,gps.uy,scale = 125, width = 0.003, color = gpscolor[i%4], alpha = 0.7,zorder=5)
 
   if gps.plotName == True:
     for kk in range(len(gps.name)):
@@ -279,21 +307,6 @@ if 'facelos' in locals():
   c = divider.append_axes("right", size="5%", pad=0.05)
   plt.colorbar(m, cax=c)
  
-for ii in range(len(shapefiles)):
-  import geopandas as gpd
-  import shapely.speedups
-  name = shapefiles[ii].name
-  fname = shapefiles[ii].filename
-  wdir = shapefiles[ii].wdir
-  color = shapefiles[ii].color
-  edgecolor = shapefiles[ii].edgecolor
-  linewidth = shapefiles[ii].linewidth
-  crs = shapefiles[ii].crs
-  shape = gpd.read_file(wdir + fname)
-  if crs != None:
-    shape = shape.to_crs("EPSG:{}".format(crs))
-  shape.plot(ax=ax,facecolor='none', color=color,edgecolor=edgecolor,linewidth=linewidth,label=name,zorder=25)
-
 for ii in range(len(seismifiles)):
   name = seismifiles[ii].name
   x,y = seismifiles[ii].x, seismifiles[ii].y
@@ -523,9 +536,9 @@ for k in range(len(profiles)):
   profiles[k].s[1]-l/2*profiles[k].n[1],y0+w/2*profiles[k].s[1]+l/2*profiles[k].n[1],y0-w/2*profiles[k].s[1]+l/2*profiles[k].n[1],y0-w/2*profiles[k].s[1]-l/2*profiles[k].n[1],y0-l/2*profiles[k].n[1],y0+l/2*profiles[k].n[1]
 
   # plot in map view  
-  ax.plot(xp[:],yp[:],color = 'black',lw = 1., zorder=30)
+  ax.plot(xp[:],yp[:],color = 'black',lw = 1., zorder=6)
   if vertical_map:
-    ax12.plot(xp[:],yp[:],color = 'black',lw = 1.)
+    ax12.plot(xp[:],yp[:],color = 'black',lw = 6.)
 
   # GPS plot
   markers = ['+','d','x','v']
