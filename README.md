@@ -58,6 +58,47 @@ Fault2d:
     name: name fault
     x,y: position east, north
 
+Example of INPUT PYTHON FILE:
+============
 
+# Input Parameters
+maindir='../' # root directory 
+outdir=maindir+'output/profiles/norcia-vertical/' # output directory to save files
+xmin, xmax = 7.8e2, 9.1e2 # x/east map extents
+ymin, ymax = 4.7e3, 4.8e3 # y/north map extents
+plot_basemap = True # plot basemap 
 
+import matplotlib.cm as cm
+cmap = cm.rainbow
 
+gpsdata=[
+        network(network='stations_dago.txt',reduction='dago21',wdir=maindir+'gps/',dim=3,scale=1,utm_proj='32632',lmin=-2.5,lmax=5,proj=[0.766044443118978,0.6427876096865394,0]),
+]
+
+insardata=[
+        network(network='N50E_mmyr.xylos',reduction='T022',wdir=maindir+'/decomposition/8looks/',dim=1,scale=1,utm_proj='32632',color='dodgerblue',lmin=-8,lmax=8),
+]
+
+profiles=[
+         profile(name='Viso',x=8.44e2,y=4.76e3,l=100,w=10,strike=-40,type='stdscat',lbins=1.),
+         profile(name='Norcia',x=8.47e2,y=4.75e3,l=100,w=10,strike=-40,type='stdscat',lbins=1.),
+         profile(name='Amatrice',x=8.5e2,y=4.74e3,l=100,w=10,strike=-40,type='stdscat',lbins=1.),
+        ]
+
+shapefiles=[
+        shapefile(name='Regions',wdir=maindir+'italian-maps-shapefiles/italy-with-regions/',filename='reg2011_g.shp',utm_proj='32632',edgecolor='black',color='none',linewidth=0.5),
+        shapefile(name='Main faults',wdir=maindir+'faults/',filename='fault_main_utm32.shp',utm_proj='32632',edgecolor='none',color='red'),
+        shapefile(name='Secondary faults',wdir=maindir+'faults/',filename='fault_utm32.shp',utm_proj='32632',edgecolor='none',color='red',linewidth=0.5)
+        ]
+
+topodata=[
+        topo(name='DEM_20',wdir=maindir+'DEM_ITALY_20/',filename='DEM20_11.5_15_41.5_43.5_s360.xyz',color='black',width=1.,utm_proj='32632',scale=1,topomin=0, topomax=5000),
+        ]
+
+seismifiles=[
+        seismicity(name='INGV 2014-2021', wdir=maindir+'seismicity/',filename='ingv_2014-2021.txt',color='yellow',width=2.,utm_proj='32632',fmt='txt')
+]
+
+fmodel=[
+		fault2d(name='LF',x=8.394e2,y=4.6806e3,utm_proj=None), # add 2D fault in map view
+]
