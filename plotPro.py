@@ -727,15 +727,14 @@ for k in range(len(profiles)):
     if len(insardata)==2:
 
       logger.info('Flat is not None and 2 InSAR network defined: flattening based on the differences in the overlapping areas')
-      insar1,insar2=insardata[0],insardata[1]
-      kk2 = np.in1d(insar2.distance, insar1.distance)
-      kk2 = np.flatnonzero(kk2==True)
-      kk1 = np.in1d(insar1.distance, insar2.distance)
-      kk1 = np.flatnonzero(kk1==True)
+      insar1, insar2 = insardata[0], insardata[1]
 
-      temp_los = (insar1.moy_los[kk1] - insar2.moy_los[kk2])[::]
-      temp_yp = insar1.distance[kk1][::]
-      temp_std = np.sqrt((insar1.std_los[kk1]**2 + insar2.std_los[kk2]**2))[::]
+      kk2 = np.flatnonzero(np.in1d(insar2.distance, insar1.distance))
+      kk1 = np.flatnonzero(np.in1d(insar1.distance, insar2.distance))
+
+      temp_los = insar1.moy_los[kk1] - insar2.moy_los[kk2]
+      temp_yp = insar1.distance[kk1]
+      temp_std = np.sqrt(insar1.std_los[kk1]**2 + insar2.std_los[kk2]**2)      
 
       # # cut longueurs tracks
       kmax1,kmax2=np.max(insar1.distance), np.max(insar2.distance)

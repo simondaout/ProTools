@@ -71,7 +71,8 @@ class network:
             if self.ref is not None:
                 self.ref_x,self.ref_y =  self.UTM(self.ref[0],self.ref[1])
        else:
-            self.ref_x,self.ref_y = self.ref[0],self.ref[1]
+            if self.ref is not None:
+                self.ref_x,self.ref_y = self.ref[0],self.ref[1]
 
     def loadgps(self):
         self.update_proj(self.ref)

@@ -33,7 +33,8 @@ class gmt:
             if self.ref is not None:
                 self.ref_x,self.ref_y =  self.UTM(self.ref[0],self.ref[1])
         else:
-            self.ref_x,self.ref_y = self.ref[0],self.ref[1]
+            if self.ref is not None:
+                self.ref_x,self.ref_y = self.ref[0],self.ref[1]
         
     #load gmt segments
     def load(self,delimiter=' ',xlim=[-1000,1000],ylim=[-1000,1000]):

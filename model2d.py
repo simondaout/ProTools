@@ -42,7 +42,8 @@ class fault2d:
             if self.ref is not None:
                 self.ref_x,self.ref_y =  self.UTM(self.ref[0],self.ref[1])
         else:
-            self.ref_x,self.ref_y = self.ref[0],self.ref[1]
+            if self.ref is not None:
+              self.ref_x,self.ref_y = self.ref[0],self.ref[1]
         
         if self.utm_proj is None:
             self.x,self.y = (self.xx-self.ref_x)*1e3,(self.yy - self.ref_y)*1e3 
@@ -114,13 +115,11 @@ class profile:
             if self.ref is not None:
                 self.ref_x,self.ref_y =  self.UTM(self.ref[0],self.ref[1])
         else:
-            self.ref_x,self.ref_y = self.ref[0],self.ref[1]        
+            if self.ref is not None:
+                self.ref_x,self.ref_y = self.ref[0],self.ref[1]        
 
         if self.utm_proj is None:
             self.x,self.y = (self.xx-self.ref_x)*1e3, (self.yy-self.ref_y)*1e3 
-            if (x is None) or (y is None):
-                print('utm_proj is not defined, you must defined the profile center (x,y) in UTM. Exit!')
-                sys.exit()
         else:
             print('Read center profile in lat/lon')
             if self.lat is not None:
@@ -174,7 +173,8 @@ class topo:
             if self.ref is not None:
                 self.ref_x,self.ref_y =  self.UTM(self.ref[0],self.ref[1])
         else:
-            self.ref_x,self.ref_y = self.ref[0],self.ref[1]
+            if self.ref is not None:
+                self.ref_x,self.ref_y = self.ref[0],self.ref[1]
 
     def load(self,xlim=None,ylim=None):
         self.update_proj(self.ref)
@@ -252,7 +252,8 @@ class seismicity:
             if self.ref is not None:
                 self.ref_x,self.ref_y =  self.UTM(self.ref[0],self.ref[1])
         else:
-            self.ref_x,self.ref_y = self.ref[0],self.ref[1]
+            if self.ref is not None:
+                self.ref_x,self.ref_y = self.ref[0],self.ref[1]
 
     def load(self,xlim=None,ylim=None):
         self.update_proj(self.ref)
