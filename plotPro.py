@@ -1054,10 +1054,10 @@ if len(profiles) > 0:
   
   if len(seismifiles)>0 : 
     logger.debug('Save {0} output file'.format(outdir+profiles[k].name+'pro-depth.eps'))
-    fig4.savefig(outdir+'/'+profiles[k].name+'pro-depth.pdf', format='PDF', dpi=150)
+    fig4.savefig(outdir+'/'+profiles[k].name+'-pro-depth.pdf', format='PDF', dpi=150)
   
   logger.debug('Save {0} output file'.format(outdir+profiles[k].name+'promap.eps'))
-  fig.savefig(outdir+'/'+profiles[k].name+'pro-map.pdf', format='PDF', dpi=150)
+  fig.savefig(outdir+'/'+profiles[k].name+'-pro-map.pdf', format='PDF', dpi=150)
 
 plt.show()
 
