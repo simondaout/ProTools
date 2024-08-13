@@ -961,11 +961,11 @@ for k in range(len(profiles)):
       plt.setp(ax2.get_xticklabels(), visible=False)
       plt.setp(ax1.get_xticklabels(), visible=False)
     if typ == 'distscale':
-      fig2.colorbar(m1,shrink=0.5, aspect=5)
+      cbar = ax2.figure.colorbar(m1, ax=ax2, shrink=0.5, aspect=5)
     else:
       ax2.legend(loc='best')
 
-if Minsar>0 and Mgps>0:
+if 'ax20' in locals():
     ax20.set_xlabel('InSAR: {}'.format(insar.reduction))
     ax20.set_ylabel('GPS: {}'.format(gps.reduction))
     logger.debug('Save {0} output file'.format(outdir+profiles[k].name+'_gpsVSinsar.pdf'))
