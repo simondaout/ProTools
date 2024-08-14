@@ -234,21 +234,6 @@ if (plot_basemap == True) and (profiles[0].ref is None):
 else:
    print('plot_basemap variable is not defined or is not True or reference point is not None. Skip backgroup topography plot')
 
-for ii in range(len(shapefiles)):
-  import geopandas as gpd
-  import shapely.speedups
-  name = shapefiles[ii].name
-  fname = shapefiles[ii].filename
-  wdir = shapefiles[ii].wdir
-  color = shapefiles[ii].color
-  edgecolor = shapefiles[ii].edgecolor
-  linewidth = shapefiles[ii].linewidth
-  crs = shapefiles[ii].crs
-  shape = gpd.read_file(wdir + fname)
-  if crs != None:
-    shape = shape.to_crs("EPSG:{}".format(crs))
-  shape.plot(ax=ax,facecolor='none', color=color,edgecolor=edgecolor,linewidth=linewidth,label=name,zorder=25)
-
 for ii in range(len(gmtfiles)):
   name = gmtfiles[ii].name
   wdir = gmtfiles[ii].wdir
@@ -287,8 +272,7 @@ for i in range(Minsar):
   m.set_array(insar.ulos[::samp])
   masked_array = np.ma.array(insar.ulos[::samp], mask=np.isnan(insar.ulos[::samp]))
   facelos = m.to_rgba(masked_array)
-  index = np.flatnonzero(np.isnan(insar.ulos))
-  ax.scatter(insar.x[::samp],insar.y[::samp], s=.05, marker = 'o',color = facelos, rasterized=True, label = 'LOS LOS Velocities {}'.format(insar.reduction),alpha=0.4,zorder=1)
+  ax.scatter(insar.x[::samp],insar.y[::samp], s=.05, marker = 'o',color = facelos, rasterized=True, label = 'LOS LOS Velocities {}'.format(insar.reduction),zorder=1)
 
 gpscolor = ['black','coral','red','darkorange']
 for i in range(Mgps):
@@ -306,6 +290,22 @@ if 'facelos' in locals():
   c = divider.append_axes("right", size="5%", pad=0.05)
   cbar = ax.figure.colorbar(m, cax=c)
   cbar.set_label('LOS Velocities',  labelpad=15) 
+
+for ii in range(len(shapefiles)):
+  import geopandas as gpd
+  import shapely.speedups
+  name = shapefiles[ii].name
+  fname = shapefiles[ii].filename
+  wdir = shapefiles[ii].wdir
+  color = shapefiles[ii].color
+  edgecolor = shapefiles[ii].edgecolor
+  linewidth = shapefiles[ii].linewidth
+  crs = shapefiles[ii].crs
+  shape = gpd.read_file(wdir + fname)
+  if crs != None:
+    shape = shape.to_crs("EPSG:{}".format(crs))
+  shape.plot(ax=ax,facecolor='none', color=color,edgecolor=edgecolor,linewidth=linewidth,label=name,zorder=25)
+
 
 for ii in range(len(seismifiles)):
   name = seismifiles[ii].name
@@ -345,6 +345,7 @@ if vertical_map:
     c = divider.append_axes("right", size="5%", pad=0.05)
     cbar = ax12.figure.colorbar(mv, cax=c)
     cbar.set_label('LOS Velocities',  labelpad=15) 
+
   for ii in range(len(shapefiles)):
     name = shapefiles[ii].name
     fname = shapefiles[ii].filename
