@@ -18,9 +18,9 @@ Requirements
 =============
 This project needs the following external components:
  * Python-3.*
- * Scipy *
- * Matplotlib *
- * PyProj *
+ * Scipy 
+ * Matplotlib 
+ * PyProj 
 
 To Run the scripts 
 =============

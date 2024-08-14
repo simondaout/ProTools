@@ -97,7 +97,7 @@ class network:
             #self.d=np.zeros(self.Npoint*self.dim)
             for j in range(self.Npoint):
                 station=self.wdir+self.reduction+'/'+self.name[j].decode('utf-8')
-                dated,east,north,esigma,nsigma=np.loadtxt(station,comments='#',usecols=(0,1,2,3,4),unpack=True,dtype='f,f,f,f,f')
+                dated,east,north,esigma,nsigma=np.loadtxt(station,comments='#',usecols=(0,1,2,3,4),unpack=True,dtype=np.float32)
                 self.ux[j],self.uy[j]=east*self.scale,north*self.scale
                 self.sigmax[j],self.sigmay[j]=esigma*self.scale,nsigma*self.scale
         elif self.dim == 3:
@@ -106,7 +106,7 @@ class network:
             self.ulos,self.sigmalos = np.zeros(self.Npoint),np.zeros(self.Npoint)
             for j in range(self.Npoint):
                 station=self.wdir+self.reduction+'/'+self.name[j].decode('utf-8')
-                dated,east,north,up,esigma,nsigma,upsigma=np.loadtxt(station,comments='#',usecols=(0,1,2,3,4,5,6),unpack=True,dtype='f,f,f,f,f,f,f')
+                dated,east,north,up,esigma,nsigma,upsigma=np.loadtxt(station,comments='#',usecols=(0,1,2,3,4,5,6),unpack=True,dtype=np.float32)
                 self.ux[j],self.uy[j],self.uv[j]=east*self.scale,north*self.scale,up*self.scale
                 self.sigmax[j],self.sigmay[j],self.sigmav[j]=esigma*self.scale,nsigma*self.scale,upsigma*self.scale
                 if self.proj is not None:
@@ -129,18 +129,18 @@ class network:
             sys.exit()
         if self.utm_proj is None:
             if self.theta is False:
-                self.x,self.y,ulos=np.loadtxt(insarf,comments='#',unpack=True,usecols=(0,1,2),dtype='f,f,f')
+                self.x,self.y,ulos=np.loadtxt(insarf,comments='#',unpack=True,usecols=(0,1,2),dtype=np.float32)
                 # convert to meters
                 self.x,self.y,ulos=self.x[::self.samp]*1e3,self.y[::self.samp]*1e3,ulos[::self.samp] 
             else:
-                self.x,self.y,ulos,self.los=np.loadtxt(insarf,comments='#',usecols=(0,1,2,3),unpack=True,dtype='f,f,f,f')
+                self.x,self.y,ulos,self.los=np.loadtxt(insarf,comments='#',usecols=(0,1,2,3),unpack=True,dtype=np.float32)
                 self.x,self.y,ulos,self.los=self.x[::self.samp],self.y[::self.samp],ulos[::self.samp],self.los[::self.samp]
         else:
             if self.theta is False:
-                self.lon,self.lat,ulos=np.loadtxt(insarf,comments='#',unpack=True,usecols=(0,1,2),dtype='f,f,f')
+                self.lon,self.lat,ulos=np.loadtxt(insarf,comments='#',unpack=True,usecols=(0,1,2),dtype=np.float32)
                 self.lon,self.lat,ulos=self.lon[::self.samp],self.lat[::self.samp],ulos[::self.samp] 
             else:
-                self.lon,self.lat,ulos,self.los=np.loadtxt(insarf,comments='#',usecols=(0,1,2,3),unpack=True,dtype='f,f,f,f')
+                self.lon,self.lat,ulos,self.los=np.loadtxt(insarf,comments='#',usecols=(0,1,2,3),unpack=True,dtype=np.float32)
                 self.lon,self.lat,ulos,self.los=self.lon[::self.samp],self.lat[::self.samp],ulos[::self.samp],self.los[::self.samp]
             
             self.x, self.y = self.UTM(self.lon, self.lat)

@@ -5,8 +5,6 @@ import numpy as np
 import scipy.optimize as opt
 import scipy.linalg as lst
 
-from osgeo import gdal
-
 from matplotlib import pyplot as plt
 import matplotlib
 import matplotlib.cm as cm
@@ -305,7 +303,7 @@ for i in range(Mgps):
 if 'facelos' in locals():
   divider = make_axes_locatable(ax)
   c = divider.append_axes("right", size="5%", pad=0.05)
-  plt.colorbar(m, cax=c)
+  ax.figure.colorbar(m, cax=c)
  
 for ii in range(len(seismifiles)):
   name = seismifiles[ii].name
@@ -700,14 +698,13 @@ for k in range(len(profiles)):
 
         del _los; del _xperp; del _yperp
 
-        #print(insar.xperp)
         try:
-            insar.xperp = np.concatenate(np.array(insar.xperp, dtype=object))
-            insar.yperp = np.concatenate(np.array(insar.yperp, dtype=object))
-            insar.uulos = np.concatenate(np.array(insar.uulos, dtype=object))
-            insar.distance = np.asarray(np.array(insar.distance, dtype=object))
-            insar.std_los = np.asarray(np.array(insar.std_los, dtype=object))
-            insar.moy_los = np.asarray(np.array(insar.moy_los, dtype=object))
+            insar.xperp = np.concatenate(insar.xperp)
+            insar.yperp = np.concatenate(insar.yperp)
+            insar.uulos = np.concatenate(insar.uulos)
+            insar.distance = np.asarray(insar.distance)
+            insar.std_los = np.asarray(insar.std_los)
+            insar.moy_los = np.asarray(insar.moy_los)
         except:
             #pass
             insar.xperp = np.array(insar.xperp)
@@ -992,7 +989,7 @@ if (flat != None) and len(insardata)==2:
     m.set_array(insar.ulos[::samp])
     masked_array = np.ma.array(insar.ulos[::samp], mask=np.isnan(insar.ulos[::samp]))
     facelos = m.to_rgba(masked_array)
-    ax.scatter(insar.x[::samp],insar.y[::samp],s = 2,marker = 'o',color = facelos,\
+    cax = ax.scatter(insar.x[::samp],insar.y[::samp],s = 2,marker = 'o',color = facelos,\
       label = 'LOS Velocity %s'%(insar.reduction),rasterized=True)
 
     # save flatten map
@@ -1029,7 +1026,7 @@ if (flat != None) and len(insardata)==2:
 
   # add colorbar los
   if len(insardata) > 0:
-    fig.colorbar(m,shrink = 0.5, aspect = 5)
+    ax.figure.colorbar(m, ax=ax, shrink = 0.5, aspect = 5)
 
 if len(profiles) > 0:
   ax1.set_xlabel('Distance (km)')
