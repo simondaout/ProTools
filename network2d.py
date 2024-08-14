@@ -145,10 +145,10 @@ class network:
             
             self.x, self.y = self.UTM(self.lon, self.lat)
             self.x, self.y = (self.x - self.ref_x), (self.y - self.ref_y)
-
-        # ulos[np.logical_or(ulos==0.0,ulos>9990.)] = np.float('NaN')
+        
+        index = np.flatnonzero(np.isnan(ulos))
+        ulos[np.logical_or(ulos == 0.0, np.logical_or(ulos > 9990.0, ulos == 255))] = np.nan
+        index = np.flatnonzero(np.isnan(ulos))
         self.ulos=ulos*self.scale + self.cst
         self.Npoint=len(self.ulos)   
     
-
-

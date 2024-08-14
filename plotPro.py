@@ -257,7 +257,7 @@ for ii in range(len(gmtfiles)):
   width = gmtfiles[ii].width
   fx,fy = gmtfiles[ii].load(xlim=xlim,ylim=ylim)
   for i in range(len(fx)):
-    ax.plot(fx[i],fy[i],color = color,lw = width,zorder=25)
+    ax.plot(fx[i],fy[i],color = color,lw = width,zorder=26)
 
 if 'cmap' not in globals():
     try:
@@ -287,7 +287,8 @@ for i in range(Minsar):
   m.set_array(insar.ulos[::samp])
   masked_array = np.ma.array(insar.ulos[::samp], mask=np.isnan(insar.ulos[::samp]))
   facelos = m.to_rgba(masked_array)
-  ax.scatter(insar.x[::samp],insar.y[::samp], s=.05, marker = 'o',color = facelos, rasterized=True, label = 'LOS Velocity {}'.format(insar.reduction),alpha=0.4,zorder=0)
+  index = np.flatnonzero(np.isnan(insar.ulos))
+  ax.scatter(insar.x[::samp],insar.y[::samp], s=.05, marker = 'o',color = facelos, rasterized=True, label = 'LOS LOS Velocities {}'.format(insar.reduction),alpha=0.4,zorder=1)
 
 gpscolor = ['black','coral','red','darkorange']
 for i in range(Mgps):
@@ -303,8 +304,9 @@ for i in range(Mgps):
 if 'facelos' in locals():
   divider = make_axes_locatable(ax)
   c = divider.append_axes("right", size="5%", pad=0.05)
-  ax.figure.colorbar(m, cax=c)
- 
+  cbar = ax.figure.colorbar(m, cax=c)
+  cbar.set_label('LOS Velocities',  labelpad=15) 
+
 for ii in range(len(seismifiles)):
   name = seismifiles[ii].name
   x,y = seismifiles[ii].x, seismifiles[ii].y
@@ -341,8 +343,8 @@ if vertical_map:
     ax12.scatter(gps.x,gps.y,c=facev,marker='o',s=10,linewidths=1, edgecolor='black',alpha=0.8,label='Vertical velocities network {}'.format(gps.reduction),zorder=10) 
     divider = make_axes_locatable(ax12)
     c = divider.append_axes("right", size="5%", pad=0.05)
-    plt.colorbar(mv, cax=c)
-      
+    cbar = ax12.figure.colorbar(mv, cax=c)
+    cbar.set_label('LOS Velocities',  labelpad=15) 
   for ii in range(len(shapefiles)):
     name = shapefiles[ii].name
     fname = shapefiles[ii].filename
@@ -536,7 +538,7 @@ for k in range(len(profiles)):
   # plot in map view  
   ax.plot(xp[:],yp[:],color = 'black',lw = 1., zorder=6)
   if vertical_map:
-    ax12.plot(xp[:],yp[:],color = 'black',lw = 6.)
+    ax12.plot(xp[:],yp[:],color = 'black', lw = 1.)
 
   # GPS plot
   markers = ['+','d','x','v']
@@ -621,8 +623,8 @@ for k in range(len(profiles)):
       for j in range(Mgps):
         gps=gpsdata[j]
         if 3 == gps.dim:
-          fig20=plt.figure(20,figsize=(12,4))
-          ax20=fig20.add_subplot(1,len(profiles),1+k)
+          fig7=plt.figure(20,figsize=(12,4))
+          ax7=fig7.add_subplot(1,len(profiles),1+k)
           los = []; gpslos = []; sigmalos = []; gpssigmalos = []
           for jj in range(len(gps.uu)):
             # select data within gps
@@ -642,15 +644,15 @@ for k in range(len(profiles)):
           los,gpslos,sigmalos,gpssigmalos = np.asarray(los),np.asarray(gpslos),np.asarray(sigmalos),np.asarray(gpssigmalos)
           index = np.nonzero((~np.isnan(los)))
           
-          ax20.plot(los[index],gpslos[index],'+',color = 'black',mew = .75)
-          ax20.errorbar(los[index],gpslos[index], xerr= sigmalos[index] , yerr = gpssigmalos[index], ecolor = 'black',fmt = "none")          
-          xlim=ax20.get_xlim(); ylim=ax20.get_ylim()
+          ax7.plot(los[index],gpslos[index],'+',color = 'black',mew = .75)
+          ax7.errorbar(los[index],gpslos[index], xerr= sigmalos[index] , yerr = gpssigmalos[index], ecolor = 'black',fmt = "none")          
+          xlim=ax7.get_xlim(); ylim=ax7.get_ylim()
           lim = np.array([np.min([xlim[0],ylim[0]]), np.max([xlim[1],ylim[1]])])
           #lim = np.array([-5,3])
           #lim = np.array([-2,6])
-          ax20.set_ylim(lim); ax20.set_xlim(lim)
-          ax20.plot(lim,lim,'-r')
-          ax20.fill_between(lim,lim-2,lim+2,alpha=0.3,color='dodgerblue')
+          ax7.set_ylim(lim); ax7.set_xlim(lim)
+          ax7.plot(lim,lim,'-r')
+          ax7.fill_between(lim,lim-2,lim+2,alpha=0.3,color='dodgerblue')
  
       # Initialise for plot in case no data for this profile
       insar.distance = []
@@ -867,14 +869,9 @@ for k in range(len(profiles)):
 
     if len(insardata)==2:
 
-        # diff = temp_los - blos[kk]
-        # coor1 = np.array([insardata[0].xx, insardata[0].yy])
-        # coor2 = np.array([insardata[1].xx, insardata[1].yy]) 
-        # indices = coor1 == coor2 
-
         # Plot histogram
-        fig4=plt.figure(5,figsize=(9,6))
-        ax4 = fig4.add_subplot(1,1,1)
+        fig5=plt.figure(5,figsize=(9,6))
+        ax4 = fig5.add_subplot(1,1,1)
         ax4.hist(diff,bins=40,density=True,histtype='stepfilled', \
           color='grey',alpha=0.4,label='{}-{}'.format(insardata[0].reduction,insardata[1].reduction))
         hdi_min, hdi_max = hdi(diff)
@@ -889,7 +886,7 @@ for k in range(len(profiles)):
         ax4.legend(loc='best')
         ax4.set_xlim(math.floor(np.nanmin(diff)),math.ceil(np.nanmax(diff)))
         logger.debug('Save {0} output file'.format(outdir+profiles[0].name+'_'+flat+'_histo.eps'))
-        fig4.savefig(outdir+'/'+profiles[0].name+'_'+flat+'_histo.eps', format='EPS',dpi=150)
+        fig5.savefig(outdir+'/'+profiles[0].name+'_'+flat+'_histo.eps', format='EPS',dpi=150)
     
     # plot ramp
     ax2.plot(x,ysp,color='red',lw=1.,label='Estimated ramp')
@@ -958,21 +955,25 @@ for k in range(len(profiles)):
       plt.setp(ax2.get_xticklabels(), visible=False)
       plt.setp(ax1.get_xticklabels(), visible=False)
     if typ == 'distscale':
-      cbar = ax2.figure.colorbar(m1, ax=ax2, shrink=0.5, aspect=5)
+      divider = make_axes_locatable(ax2)
+      c = divider.append_axes("right", size="5%", pad=0.05)
+      cbar = ax2.figure.colorbar(m1, cax=c)
+      cbar.set_label('LOS Velocities',  labelpad=15)
+      #cbar = ax2.figure.colorbar(m1, ax=ax2, shrink=0.5, aspect=5)
     else:
       ax2.legend(loc='best')
 
-if 'ax20' in locals():
-    ax20.set_xlabel('InSAR: {}'.format(insar.reduction))
-    ax20.set_ylabel('GPS: {}'.format(gps.reduction))
+if 'ax7' in locals():
+    ax7.set_xlabel('InSAR: {}'.format(insar.reduction))
+    ax7.set_ylabel('GPS: {}'.format(gps.reduction))
     logger.debug('Save {0} output file'.format(outdir+profiles[k].name+'_gpsVSinsar.pdf'))
-    fig20.savefig(outdir+profiles[k].name+'_gpsVSinsar.pdf', format='PDF',dpi=150)    
+    fig7.savefig(outdir+profiles[k].name+'_gpsVSinsar.pdf', format='PDF',dpi=150)    
 
 if (flat != None) and len(insardata)==2:
   logger.info('Plot fatten Maps...')
   # MAP
-  fig=plt.figure(6,figsize = (9,7))
-  ax = fig.add_subplot(1,1,1)
+  fig6=plt.figure(6,figsize = (9,7))
+  ax = fig6.add_subplot(1,1,1)
   ax.axis('equal')
   if 'xmin' in locals():
     ax.set_xlim(xmin,xmax)
@@ -990,7 +991,7 @@ if (flat != None) and len(insardata)==2:
     masked_array = np.ma.array(insar.ulos[::samp], mask=np.isnan(insar.ulos[::samp]))
     facelos = m.to_rgba(masked_array)
     cax = ax.scatter(insar.x[::samp],insar.y[::samp],s = 2,marker = 'o',color = facelos,\
-      label = 'LOS Velocity %s'%(insar.reduction),rasterized=True)
+      label = 'LOS LOS Velocities %s'%(insar.reduction),rasterized=True)
 
     # save flatten map
     if i==1:
@@ -1026,7 +1027,11 @@ if (flat != None) and len(insardata)==2:
 
   # add colorbar los
   if len(insardata) > 0:
-    ax.figure.colorbar(m, ax=ax, shrink = 0.5, aspect = 5)
+    divider = make_axes_locatable(ax)
+    c = divider.append_axes("right", size="5%", pad=0.05)
+    cbar = ax.figure.colorbar(m, cax=c) 
+    cbar.set_label('LOS Velocities',  labelpad=15)
+    #ax.figure.colorbar(m, ax=ax, shrink = 0.5, aspect = 5)
 
 if len(profiles) > 0:
   ax1.set_xlabel('Distance (km)')
@@ -1038,7 +1043,7 @@ if len(profiles) > 0:
   
   if Minsar>0:
     ax2.set_xlabel('Distance (km)')
-    ax2.set_ylabel('LOS velocity (mm)')
+    ax2.set_ylabel('LOS Velocities (mm)')
     logger.debug('Save {0} output file'.format(outdir+profiles[k].name+'pro-los.pdf'))
     fig2.savefig(outdir+'/'+profiles[k].name+'-pro-los.pdf', format='PDF',dpi=150)
   
