@@ -1,6 +1,31 @@
-# plotPro.py 
+Python scripts to plot profiles across InSAR, GPS, MNT data and/or estimate residual ramps, with additional options to plot GMT files, shapefiles, seismicity etc. 
 
-Python script to plot profiles across InSAR and GPS data and/or estimate residual ramps. 
+To download the package
+=============
+```git clone https://github.com/simondaout/ProTools.git```
+
+To update the software:
+```git pull```
+
+In case of fire:
+```
+git commit
+git push
+leave building
+```
+
+Requirements
+=============
+This project needs the following external components:
+ * Python-3.*
+ * Scipy *
+ * Matplotlib *
+ * PyProj *
+
+To Run the scripts 
+=============
+plotPro.py "Input python file"
+
 
 Example of Input python file:
 ============
