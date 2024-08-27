@@ -579,7 +579,7 @@ for k in range(len(profiles)):
 
           ax3.plot(gps.yyp,gps.uuv,markers[i],color = 'red',mew = 1.5,label = '%s vertical velocities'%gpsdata[i].reduction)
           ax3.errorbar(gps.yyp,gps.uuv,yerr = gps.sigmavv,ecolor = 'red',fmt = "none",alpha=.5)          
-          
+
           if gps.proj != None:
             # plot gps los
             ax2.plot(gps.yyp,gps.uu,'+',color='red',mew=2.,label='%s GPS LOS'%gpsdata[i].reduction)
@@ -794,16 +794,6 @@ for k in range(len(profiles)):
     _func = lambda x: np.sum(((np.dot(G,x)-temp_los)/temp_std)**2)
     _fprime = lambda x: 2*np.dot(G.T/temp_std, (np.dot(G,x)-temp_los[::])/temp_std)
     pars = opt.fmin_slsqp(_func,x0,fprime=_fprime,iter=2000,full_output=True,iprint=0)[0]
-
-    # if flat == 'quad': 
-    #   a = pars[0]; b = pars[1]; c = pars[2]
-    #   blos = a*insar2.distance[kk2]**2 + b*insar2.distance[kk2] + c
-    # elif flat == 'cub':
-    #   a = pars[0]; b = pars[1]; c = pars[2]; d =pars[3]
-    #   blos = a*insar2.distance[kk2]**3 + b*insar2.distance[kk2]**2 + c*insar2.distance[kk2] + d
-    # else:
-    #   a = pars[0]; b = pars[1]
-    #   blos = a*insar2.distance[kk2] + b
     
     if flat == 'quad':
         a = pars[0]; b = pars[1]; c = pars[2]

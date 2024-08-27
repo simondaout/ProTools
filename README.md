@@ -50,7 +50,7 @@ Example of Input python file:
 	# Optional
 	# gps data are here projected in the N50E direction
 	gpsdata=[
-        network(network='stations_dago.txt',reduction='dago21',wdir=maindir+'gps/',dim=3,scale=1,utm_proj='32632',lmin=-2.5,lmax=5,proj=[0.766044443118978,0.6427876096865394,0]),
+        network(network='TabS3.txt',reduction='dago21',wdir=maindir+'gps/',dim=3,scale=1,utm_proj='32632',lmin=-2.5,lmax=5,proj=[0.6427876096865394,0.766044443118978,0]),
 	]
 	
 	# 3 profiles are defined with the stdscat option (plot scatter + standar deviation)
