@@ -143,30 +143,39 @@ class network:
 
     def loadinsar(self):
         self.update_proj(self.ref)
-        insarf=self.wdir+ '/' +self.network
-        if path.exists(insarf) is False:
-            print("File: {0} not found, Exit!".format(insarf))
+        insarf = self.wdir + '/' + self.network
+        if not path.exists(insarf):
+            print(f"File: {insarf} not found, Exit!")
             sys.exit()
+
         if self.utm_proj is None:
-            if self.theta is False:
-                self.x,self.y,ulos=np.loadtxt(insarf,comments='#',unpack=True,usecols=(0,1,2),dtype=np.float32)
-                # convert to meters
-                self.x,self.y,ulos=self.x[::self.samp]*1e3,self.y[::self.samp]*1e3,ulos[::self.samp] 
+            if not self.theta:
+                self.x, self.y, ulos = np.loadtxt(insarf, comments='#', unpack=True, usecols=(0, 1, 2),
+                                                  dtype=np.float32)
+                # Convert to meters and apply sampling
+                self.x, self.y, ulos = self.x[::self.samp] * 1e3, self.y[::self.samp] * 1e3, ulos[::self.samp]
             else:
-                self.x,self.y,ulos,self.los=np.loadtxt(insarf,comments='#',usecols=(0,1,2,3),unpack=True,dtype=np.float32)
-                self.x,self.y,ulos,self.los=self.x[::self.samp],self.y[::self.samp],ulos[::self.samp],self.los[::self.samp]
+                self.x, self.y, ulos, self.los = np.loadtxt(insarf, comments='#', unpack=True, usecols=(0, 1, 2, 3),
+                                                            dtype=np.float32)
+                self.x, self.y, ulos, self.los = self.x[::self.samp], self.y[::self.samp], ulos[::self.samp], self.los[
+                                                                                                              ::self.samp]
         else:
-            if self.theta is False:
-                self.lon,self.lat,ulos=np.loadtxt(insarf,comments='#',unpack=True,usecols=(0,1,2),dtype=np.float32)
-                self.lon,self.lat,ulos=self.lon[::self.samp],self.lat[::self.samp],ulos[::self.samp] 
+            if not self.theta:
+                self.lon, self.lat, ulos = np.loadtxt(insarf, comments='#', unpack=True, usecols=(0, 1, 2),
+                                                      dtype=np.float32)
+                self.lon, self.lat, ulos = self.lon[::self.samp], self.lat[::self.samp], ulos[::self.samp]
             else:
-                self.lon,self.lat,ulos,self.los=np.loadtxt(insarf,comments='#',usecols=(0,1,2,3),unpack=True,dtype=np.float32)
-                self.lon,self.lat,ulos,self.los=self.lon[::self.samp],self.lat[::self.samp],ulos[::self.samp],self.los[::self.samp]
-            
+                self.lon, self.lat, ulos, self.los = np.loadtxt(insarf, comments='#', unpack=True, usecols=(0, 1, 2, 3),
+                                                                dtype=np.float32)
+                self.lon, self.lat, ulos, self.los = self.lon[::self.samp], self.lat[::self.samp], ulos[
+                                                                                                   ::self.samp], self.los[
+                                                                                                                 ::self.samp]
+
+            # Convert lon/lat to UTM and adjust with the reference point
             self.x, self.y = self.UTM(self.lon, self.lat)
             self.x, self.y = (self.x - self.ref_x), (self.y - self.ref_y)
-        
-        #ulos[np.logical_or(ulos == 0.0, np.logical_or(ulos > 9990.0, ulos == 255))] = np.nan
-        self.ulos=ulos*self.scale + self.cst
-        self.Npoint=len(self.ulos)   
+
+        # Apply scale and constant to ulos
+        self.ulos = ulos * self.scale + self.cst
+        self.Npoint = len(self.ulos)
     
