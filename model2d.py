@@ -57,7 +57,7 @@ class profile:
     profile class: Load profiles 
     Parameters: 
     name: name profile
-    x,y: profile reference point in UTM 
+    x,y: profile reference point in UTM and in km 
     l,w: length, width of the progile 
     strike: strike angle of the profile
     lat,lon: profile reference point in lat/lon (Optional)

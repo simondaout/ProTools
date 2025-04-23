@@ -218,7 +218,7 @@ if vertical_map:
   fig=plt.figure(0,figsize = (16,8))
   ax = fig.add_subplot(1,2,1)
 else:
-  fig=plt.figure(0,figsize = (12,5))
+  fig=plt.figure(0,figsize = (10,9))
   ax = fig.add_subplot(1,1,1)
 
 logger.info('Plot Map ....') 
