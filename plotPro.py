@@ -247,7 +247,7 @@ for ii in range(len(gmtfiles)):
 if 'cmap' not in globals():
     try:
         from matplotlib.colors import LinearSegmentedColormap
-        cm_locs = os.environ["Flower2d"] + '/contrib/colormaps/'
+        cm_locs = os.environ["ProTools"] + '/contrib/colormaps/'
         cmap = LinearSegmentedColormap.from_list('roma', np.loadtxt(cm_locs+"roma.txt"))
         cmap = cmap.reversed()
     except:
