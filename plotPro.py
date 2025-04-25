@@ -536,6 +536,12 @@ for k in range(len(profiles)):
   yp[:] = y0-w/2*profiles[k].s[1]-l/2*profiles[k].n[1],y0+w/2*\
   profiles[k].s[1]-l/2*profiles[k].n[1],y0+w/2*profiles[k].s[1]+l/2*profiles[k].n[1],y0-w/2*profiles[k].s[1]+l/2*profiles[k].n[1],y0-w/2*profiles[k].s[1]-l/2*profiles[k].n[1],y0-l/2*profiles[k].n[1],y0+l/2*profiles[k].n[1]
 
+  print('Save profile coordiantes in {}'.format(outdir+'/profile/'+name+'_coord.txt'))
+  fid = open(outdir + profiles[k].name +'_coord.txt','w')
+  np.savetxt(fid, np.vstack([xp[:],yp[:]]).T ,header = 'x(km)     y(km) ',comments = '# ')
+  fid.write('\n')
+  fid.close
+
   # plot in map view  
   ax.plot(xp[:],yp[:],color = 'black',lw = 1., zorder=6)
   if vertical_map:
